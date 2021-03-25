@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, TextInput } from "react-native";
+import {
+    View,
+    TouchableOpacity,
+    TextInput,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native";
 import styles from "./styles";
 
 import { API, Auth, graphqlOperation } from "aws-amplify";
@@ -34,19 +40,17 @@ const InputBox = (props) => {
     const updateChatRoomLastMessage = async (messageId: String) => {
         try {
             await API.graphql(
-                graphqlOperation(
-                    updateChatRoom, {
-                        input: {
-                            id: chatRoomID,
-                            lastMessageID: messageId
-                        }
-                    }
-                )
-            )
+                graphqlOperation(updateChatRoom, {
+                    input: {
+                        id: chatRoomID,
+                        lastMessageID: messageId,
+                    },
+                })
+            );
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
-    }
+    };
 
     const onSendPress = async () => {
         try {
@@ -60,7 +64,9 @@ const InputBox = (props) => {
                 })
             );
 
-            await updateChatRoomLastMessage(newMessageData.data.createMessage.id)
+            await updateChatRoomLastMessage(
+                newMessageData.data.createMessage.id
+            );
         } catch (e) {
             console.log(e);
         }
@@ -77,45 +83,55 @@ const InputBox = (props) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.mainContainer}>
-                <FontAwesome5 name="laugh-beam" size={24} color={"grey"} />
-                <TextInput
-                    placeholder={"Type a message"}
-                    style={styles.textInput}
-                    multiline
-                    value={message}
-                    onChangeText={setMessage}
-                />
-                <Entypo
-                    name="attachment"
-                    size={24}
-                    color={"grey"}
-                    style={styles.icon}
-                />
-                {!message && (
-                    <Fontisto
-                        name="camera"
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={75}
+            style={styles.container}
+        >
+            <View style={styles.container}>
+                <View style={styles.mainContainer}>
+                    <FontAwesome5 name="laugh-beam" size={24} color={"grey"} />
+                    <TextInput
+                        placeholder={"Type a message"}
+                        style={styles.textInput}
+                        multiline
+                        value={message}
+                        onChangeText={setMessage}
+                    />
+                    <Entypo
+                        name="attachment"
                         size={24}
                         color={"grey"}
                         style={styles.icon}
                     />
-                )}
-            </View>
-            <TouchableOpacity onPress={onPress}>
-                <View style={styles.buttomContainer}>
-                    {!message ? (
-                        <MaterialCommunityIcons
-                            name="microphone"
-                            size={28}
-                            color={"white"}
+                    {!message && (
+                        <Fontisto
+                            name="camera"
+                            size={24}
+                            color={"grey"}
+                            style={styles.icon}
                         />
-                    ) : (
-                        <MaterialIcons name="send" size={28} color={"white"} />
                     )}
                 </View>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity onPress={onPress}>
+                    <View style={styles.buttomContainer}>
+                        {!message ? (
+                            <MaterialCommunityIcons
+                                name="microphone"
+                                size={28}
+                                color={"white"}
+                            />
+                        ) : (
+                            <MaterialIcons
+                                name="send"
+                                size={28}
+                                color={"white"}
+                            />
+                        )}
+                    </View>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 

@@ -7,6 +7,9 @@ const styles = StyleSheet.create({
         margin: 10,
         alignItems: "flex-end",
     },
+    containerKA: {
+        flex: 1,
+    },
     mainContainer: {
         flexDirection: "row",
         backgroundColor: "white",
